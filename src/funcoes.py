@@ -1,12 +1,15 @@
 # TP 1 - Fundamentos de IA
 # Julia Machado, Igor Falco, Eduardo Fernandes
 
+import random
+
 
 #########   Tarefa 1   #########
 
 def verificaSolvabilidade(tabuleiro):
     inversoes = 0
     posicaoVazia = -1
+    print(tabuleiro)
 
     for i in range(15): # Percorre até o penúltimo elemento
         for j in range(i+1, 16): # Compara com os elementos à frente
@@ -26,20 +29,13 @@ def verificaSolvabilidade(tabuleiro):
     else:
         return False
     
-
-
-## teste
-tabuleiro = [1, 2, 3, 4,
-             5, 6, 7, 8,
-             9, 10, 11, 12,
-             13, 14, 0, 15]
-tabuleiro_nao_solvavel = [1, 2, 3, 4,
-                           5, 6, 7, 8,
-                           9, 10, 11, 12,
-                           13, 15, 14, 0] 
-print(verificaSolvabilidade(tabuleiro))
-print(verificaSolvabilidade(tabuleiro_nao_solvavel))
-##
-
-
 #########   Tarefa 2   #########
+
+def gerarTabuleiro():
+    tabuleiro = list(range(16))  # Cria uma lista [0, 1, 2, ..., 15]
+    random.shuffle(tabuleiro)  # Embaralha os números
+    return tabuleiro
+
+#########   Tarefa 3   #########
+
+
