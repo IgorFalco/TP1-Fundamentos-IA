@@ -2,7 +2,6 @@ from estado import Estado
 from funcoes import gerarTabuleiro, verificaSolvabilidade
 from grafo import Grafo
 
-
 def main():
     # Gera um tabuleiro inicial solvável
     tabuleiro = gerarTabuleiro()
@@ -12,7 +11,7 @@ def main():
     estado_inicial = Estado(tabuleiro)
     print("Estado inicial: " + str(estado_inicial))
 
-    # Inicializa e constrói o grafo a partir do estado inicial
+    # Constrói um grafo explorando vizinhos
     grafo = Grafo()
     grafo.construir_grafo(estado_inicial, limite=10)
 

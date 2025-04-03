@@ -1,4 +1,4 @@
-from src.funcoes import verificaSolvabilidade, gerarTabuleiro
+from src.funcoes import verificaSolvabilidade, gerarTabuleiro, busca_em_largura, busca_em_profundidade
 from src.estado import Estado
 from src.grafo import Grafo
 import unittest
@@ -87,17 +87,13 @@ class TestGrafo(unittest.TestCase):
                                  13, 14, 0, 15])
 
         grafo.construir_grafo(estado_inicial, limite=5)
-        # Deve construir pelo menos 5 estados
         self.assertGreaterEqual(len(grafo.vertices), 5)
 
     def test_limite_vizinhos(self):
         grafo = Grafo()
-
-        # Gerar um estado aleatório
         estado_inicial = Estado(random.sample(range(16), 16))
         grafo.adicionar_vertice(estado_inicial)
 
-        # Expande os estados até 1000 vértices
         fila = [estado_inicial]
         visitados = set()
 
@@ -110,13 +106,49 @@ class TestGrafo(unittest.TestCase):
                     grafo.adicionar_aresta(estado_atual, vizinho)
                     fila.append(vizinho)
 
-        # Verificações
         for estado, vizinhos in grafo.vertices.items():
-            self.assertLessEqual(
-                len(vizinhos), 4, f"Estado {estado} tem mais de 4 vizinhos!")
+            self.assertLessEqual(len(vizinhos), 4)
             if estado != estado_inicial:
-                self.assertGreaterEqual(
-                    len(vizinhos), 1, f"Estado {estado} não tem pelo menos um vizinho!")
+                self.assertGreaterEqual(len(vizinhos), 1)
+
+
+class TestBuscaEmLargura(unittest.TestCase):
+
+    def test_bfs_encontra_solucao_simples(self):
+        estado_inicial = Estado([1, 2, 3, 4,
+                                 5, 6, 7, 8,
+                                 9, 10, 11, 12,
+                                 13, 14, 0, 15])
+
+        estado_objetivo = Estado([1, 2, 3, 4,
+                                  5, 6, 7, 8,
+                                  9, 10, 11, 12,
+                                  13, 14, 15, 0])
+
+        caminho = busca_em_largura(estado_inicial, estado_objetivo)
+
+        self.assertIsNotNone(caminho)
+        self.assertEqual(caminho[-1], estado_objetivo)
+        self.assertEqual(len(caminho) - 1, 1)  # 1 movimento até o objetivo
+
+class TestBuscaEmProfundidade(unittest.TestCase):
+
+    def test_dfs_encontra_solucao_simples(self):
+        estado_inicial = Estado([1, 2, 3, 4,
+                                 5, 6, 7, 8,
+                                 9, 10, 11, 12,
+                                 13, 14, 0, 15])  # apenas 1 movimento do objetivo
+
+        estado_objetivo = Estado([1, 2, 3, 4,
+                                  5, 6, 7, 8,
+                                  9, 10, 11, 12,
+                                  13, 14, 15, 0])
+
+        caminho = busca_em_profundidade(estado_inicial, estado_objetivo)
+
+        self.assertIsNotNone(caminho)
+        self.assertEqual(caminho[-1], estado_objetivo)
+        self.assertEqual(len(caminho) - 1, 1)  # Apenas 1 movimento até o objetivo
 
 
 if __name__ == '__main__':
