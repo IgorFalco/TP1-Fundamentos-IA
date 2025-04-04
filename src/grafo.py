@@ -19,21 +19,28 @@ class Grafo:
         if estado1 not in self.vertices[estado2]:
             self.vertices[estado2].append(estado1)
 
-    def construir_grafo(self, estado_inicial, limite=100):
-        # Expande o grafo a partir do estado inicial até um limite de estados.
+    def construir_grafo(self, estado_inicial, estado_objetivo=None, limite=None):
         from collections import deque
 
         fila = deque([estado_inicial])
         self.adicionar_vertice(estado_inicial)
 
-        while fila and len(self.vertices) < limite:
+        while fila:
+            if limite and len(self.vertices) >= limite:
+                break
+
             estado_atual = fila.popleft()
+
+            if estado_atual == estado_objetivo:
+                return True  # Encontrou o objetivo
 
             for vizinho in estado_atual.get_neighbors():
                 if vizinho not in self.vertices:
                     self.adicionar_vertice(vizinho)
                     fila.append(vizinho)
                 self.adicionar_aresta(estado_atual, vizinho)
+
+        return estado_objetivo is None  # Se não tinha objetivo, retorna True por padrão
 
     def __repr__(self):
         # Representação do grafo

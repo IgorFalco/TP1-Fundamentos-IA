@@ -4,42 +4,41 @@
 import random
 from collections import deque
 from estado import Estado
+from grafo import Grafo
 
 #########   Tarefa 1   #########
 
 def verificaSolvabilidade(tabuleiro):
     inversoes = 0
-    posicaoVazia = -1
     
-    for i in range(15):  # Percorre até o penúltimo elemento
-        for j in range(i+1, 16):  # Compara com os elementos à frente
-
+    for i in range(15):  # até o penúltimo elemento
+        for j in range(i + 1, 16):
             if tabuleiro[i] > tabuleiro[j] and tabuleiro[i] != 0 and tabuleiro[j] != 0:
                 inversoes += 1
 
-    # Encontra a posição do número 0 (espaço vazio)
-    posicaoVazia = tabuleiro.index(0)
+    posicao_vazia = tabuleiro.index(0)
+    linha_vazia_de_baixo = 4 - (posicao_vazia // 4)  # Conta de baixo pra cima
 
-    if posicaoVazia != -1:
-        linhaVazia = posicaoVazia//4  # Linha em que está o espaço vazio
-
-    # Verifica se é solucionável
-    if (inversoes % 2 == 0 and linhaVazia % 2 != 0) or (inversoes % 2 != 0 and linhaVazia % 2 == 0):
+    # Verifica solvabilidade com base nas regras do jogo 15 (4x4)
+    if (inversoes % 2 == 0 and linha_vazia_de_baixo % 2 == 1) or \
+       (inversoes % 2 == 1 and linha_vazia_de_baixo % 2 == 0):
         return True
     else:
         return False
 
 #########   Tarefa 2   #########
 
-
 def gerarTabuleiro():
-    tabuleiro = list(range(16))  # Cria uma lista [0, 1, 2, ..., 15]
-    random.shuffle(tabuleiro)  # Embaralha os números
+    tabuleiro = list(range(16))  # [0, 1, ..., 15]
+    random.shuffle(tabuleiro)
     return tabuleiro
 
 #########   Tarefa 3   #########
 
-def busca_em_largura(estado_inicial, estado_objetivo):
+def bfs_em_grafo(grafo, estado_inicial, estado_objetivo):
+    if estado_inicial not in grafo.vertices or estado_objetivo not in grafo.vertices:
+        return None
+
     fila = deque([estado_inicial])
     visitados = set()
     predecessores = {estado_inicial: None}
@@ -48,23 +47,25 @@ def busca_em_largura(estado_inicial, estado_objetivo):
         atual = fila.popleft()
         visitados.add(atual)
 
-        if atual.board == estado_objetivo.board:
-            # Reconstrói o caminho da solução
+        if atual == estado_objetivo:
             caminho = []
             while atual:
                 caminho.append(atual)
                 atual = predecessores[atual]
             caminho.reverse()
-            return caminho  # Lista de estados do inicial ao objetivo
+            return caminho
 
-        for vizinho in atual.get_neighbors():
+        for vizinho in grafo.vertices.get(atual, []):
             if vizinho not in visitados and vizinho not in fila:
                 fila.append(vizinho)
                 predecessores[vizinho] = atual
 
-    return None  # Não encontrou solução
+    return None
 
-def busca_em_profundidade(estado_inicial, estado_objetivo, limite_profundidade=50):
+def dfs_em_grafo(grafo, estado_inicial, estado_objetivo, limite_profundidade=5000):
+    if estado_inicial not in grafo.vertices or estado_objetivo not in grafo.vertices:
+        return None
+
     pilha = [(estado_inicial, [estado_inicial])]
     visitados = set()
 
@@ -74,14 +75,14 @@ def busca_em_profundidade(estado_inicial, estado_objetivo, limite_profundidade=5
             continue
         visitados.add(atual)
 
-        if atual.board == estado_objetivo.board:
+        if atual == estado_objetivo:
             return caminho
 
         if len(caminho) >= limite_profundidade:
             continue
 
-        for vizinho in reversed(atual.get_neighbors()):
+        for vizinho in reversed(grafo.vertices.get(atual, [])):
             if vizinho not in visitados:
                 pilha.append((vizinho, caminho + [vizinho]))
 
-    return None  # Não encontrou solução dentro do limite
+    return None
