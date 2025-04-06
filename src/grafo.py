@@ -1,5 +1,5 @@
-from collections import deque
 
+from collections import deque
 
 class Grafo:
     def __init__(self):
@@ -27,7 +27,7 @@ class Grafo:
 
         if estado1 not in self.vertices[estado2]:
             self.vertices[estado2].append(estado1)
-
+            
     def construir_grafo(self, estado_inicial, limite=1000):
 
         fila = deque([estado_inicial])

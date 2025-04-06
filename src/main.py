@@ -56,6 +56,5 @@ def main():
     else:
         print("\n❌ DFS não encontrou solução no grafo com o limite configurado")
 
-
 if __name__ == "__main__":
     main()

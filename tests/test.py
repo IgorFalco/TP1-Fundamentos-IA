@@ -1,3 +1,4 @@
+
 from src.funcoes import verificaSolvabilidade, gerarTabuleiro, bfs_em_grafo, dfs_em_grafo
 from src.estado import Estado
 from src.grafo import Grafo
@@ -87,13 +88,18 @@ class TestGrafo(unittest.TestCase):
                                  13, 14, 0, 15])
 
         grafo.construir_grafo(estado_inicial, limite=5)
+        
+        # Deve construir pelo menos 5 estados
         self.assertGreaterEqual(len(grafo.vertices), 5)
 
     def test_limite_vizinhos(self):
         grafo = Grafo()
+
+        # Gerar um estado aleatório
         estado_inicial = Estado(random.sample(range(16), 16))
         grafo.adicionar_vertice(estado_inicial)
 
+        # Expande os estados até 1000 vértices
         fila = [estado_inicial]
         visitados = set()
 
@@ -106,10 +112,13 @@ class TestGrafo(unittest.TestCase):
                     grafo.adicionar_aresta(estado_atual, vizinho)
                     fila.append(vizinho)
 
+        # Verificações
         for estado, vizinhos in grafo.vertices.items():
-            self.assertLessEqual(len(vizinhos), 4)
+            self.assertLessEqual(
+                len(vizinhos), 4, f"Estado {estado} tem mais de 4 vizinhos!")
             if estado != estado_inicial:
-                self.assertGreaterEqual(len(vizinhos), 1)
+                self.assertGreaterEqual(
+                    len(vizinhos), 1, f"Estado {estado} não tem pelo menos um vizinho!")
 
 
 class TestBuscaEmLargura(unittest.TestCase):

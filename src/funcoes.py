@@ -8,23 +8,28 @@ from collections import deque
 
 def verificaSolvabilidade(tabuleiro):
     inversoes = 0
+    posicaoVazia = -1
     
-    for i in range(15):  # até o penúltimo elemento
-        for j in range(i + 1, 16):
+    for i in range(15):  # Percorre até o penúltimo elemento
+        for j in range(i+1, 16):  # Compara com os elementos à frente
+
             if tabuleiro[i] > tabuleiro[j] and tabuleiro[i] != 0 and tabuleiro[j] != 0:
                 inversoes += 1
+
+    # Encontra a posição do número 0 (espaço vazio)
+    posicaoVazia = tabuleiro.index(0)
 
     posicao_vazia = tabuleiro.index(0)
     linha_vazia_de_baixo = 4 - (posicao_vazia // 4)  # Conta de baixo pra cima
 
-    # Verifica solvabilidade com base nas regras do jogo 15 (4x4)
-    if (inversoes % 2 == 0 and linha_vazia_de_baixo % 2 == 1) or \
-       (inversoes % 2 == 1 and linha_vazia_de_baixo % 2 == 0):
+    # Verifica se é solucionável
+    if (inversoes % 2 == 0 and linhaVazia % 2 != 0) or (inversoes % 2 != 0 and linhaVazia % 2 == 0):
         return True
     else:
         return False
 
 #########   Tarefa 2   #########
+
 
 def gerarTabuleiro():
     tabuleiro = list(range(16))  # [0, 1, ..., 15]

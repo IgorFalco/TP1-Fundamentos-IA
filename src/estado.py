@@ -2,7 +2,7 @@ class Estado:
     MOVES = {
         "left": -1, "right": 1, "up": -4, "down": 4
     }
-
+    
     def __init__(self, tabuleiro):
         # Inicializa um estado do jogo.
         self.tabuleiro = tuple(tabuleiro)  # Usa tupla para imutabilidade
