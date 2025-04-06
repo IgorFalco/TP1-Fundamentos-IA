@@ -19,8 +19,8 @@ def verificaSolvabilidade(tabuleiro):
     # Encontra a posição do número 0 (espaço vazio)
     posicaoVazia = tabuleiro.index(0)
 
-    posicao_vazia = tabuleiro.index(0)
-    linha_vazia_de_baixo = 4 - (posicao_vazia // 4)  # Conta de baixo pra cima
+    if posicaoVazia != -1:
+         linhaVazia = posicaoVazia//4  # Linha em que está o espaço vazio
 
     # Verifica se é solucionável
     if (inversoes % 2 == 0 and linhaVazia % 2 != 0) or (inversoes % 2 != 0 and linhaVazia % 2 == 0):
