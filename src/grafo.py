@@ -1,7 +1,16 @@
+
+from collections import deque
+
 class Grafo:
     def __init__(self):
         # Inicializa um grafo como uma lista de adjacência vazia
         self.vertices = {}
+
+    def copia(self):
+        novo = Grafo()
+        for estado, vizinhos in self.vertices.items():
+            novo.vertices[estado] = list(vizinhos)
+        return novo
 
     def adicionar_vertice(self, estado):
         # Adiciona um estado ao grafo se ainda não estiver presente
@@ -18,10 +27,8 @@ class Grafo:
 
         if estado1 not in self.vertices[estado2]:
             self.vertices[estado2].append(estado1)
-
-    def construir_grafo(self, estado_inicial, limite=100):
-        # Expande o grafo a partir do estado inicial até um limite de estados.
-        from collections import deque
+            
+    def construir_grafo(self, estado_inicial, limite=1000):
 
         fila = deque([estado_inicial])
         self.adicionar_vertice(estado_inicial)

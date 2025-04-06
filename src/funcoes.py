@@ -2,7 +2,7 @@
 # Julia Machado, Igor Falco, Eduardo Fernandes
 
 import random
-
+from collections import deque
 
 #########   Tarefa 1   #########
 
@@ -19,8 +19,8 @@ def verificaSolvabilidade(tabuleiro):
     # Encontra a posição do número 0 (espaço vazio)
     posicaoVazia = tabuleiro.index(0)
 
-    if posicaoVazia != -1:
-        linhaVazia = posicaoVazia//4  # Linha em que está o espaço vazio
+    posicao_vazia = tabuleiro.index(0)
+    linha_vazia_de_baixo = 4 - (posicao_vazia // 4)  # Conta de baixo pra cima
 
     # Verifica se é solucionável
     if (inversoes % 2 == 0 and linhaVazia % 2 != 0) or (inversoes % 2 != 0 and linhaVazia % 2 == 0):
@@ -32,8 +32,66 @@ def verificaSolvabilidade(tabuleiro):
 
 
 def gerarTabuleiro():
-    tabuleiro = list(range(16))  # Cria uma lista [0, 1, 2, ..., 15]
-    random.shuffle(tabuleiro)  # Embaralha os números
+    tabuleiro = list(range(16))  # [0, 1, ..., 15]
+    random.shuffle(tabuleiro)
     return tabuleiro
 
 #########   Tarefa 3   #########
+
+def bfs_em_grafo(grafo, estado_inicial, estado_objetivo, limite_vertices_total=100000):
+    fila = deque([estado_inicial])
+    visitados = set()
+    predecessores = {estado_inicial: None}
+
+    while fila:
+        atual = fila.popleft()
+        visitados.add(atual)
+
+        if atual == estado_objetivo:
+            caminho = []
+            while atual:
+                caminho.append(atual)
+                atual = predecessores[atual]
+            caminho.reverse()
+            return caminho
+
+        for vizinho in atual.get_neighbors():
+            if vizinho not in grafo.vertices:
+                if len(grafo.vertices) >= limite_vertices_total:
+                    continue
+                grafo.adicionar_vertice(vizinho)
+                grafo.adicionar_aresta(atual, vizinho)
+
+            if vizinho not in visitados and vizinho not in fila:
+                fila.append(vizinho)
+                predecessores[vizinho] = atual
+
+    return None
+
+def dfs_em_grafo(grafo, estado_inicial, estado_objetivo, limite_profundidade=5000, limite_vertices_total=100000):
+    pilha = [(estado_inicial, [estado_inicial])]
+    visitados = set()
+
+    while pilha:
+        atual, caminho = pilha.pop()
+        if atual in visitados:
+            continue
+        visitados.add(atual)
+
+        if atual == estado_objetivo:
+            return caminho
+
+        if len(caminho) >= limite_profundidade:
+            continue
+
+        for vizinho in reversed(atual.get_neighbors()):
+            if vizinho not in grafo.vertices:
+                if len(grafo.vertices) >= limite_vertices_total:
+                    continue
+                grafo.adicionar_vertice(vizinho)
+                grafo.adicionar_aresta(atual, vizinho)
+
+            if vizinho not in visitados:
+                pilha.append((vizinho, caminho + [vizinho]))
+
+    return None
