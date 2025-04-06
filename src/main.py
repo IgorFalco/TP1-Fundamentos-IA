@@ -2,8 +2,11 @@ from estado import Estado
 from grafo import Grafo
 from funcoes import bfs_em_grafo, dfs_em_grafo, gerarTabuleiro, verificaSolvabilidade
 
+
 def main():
-    # Tabuleiro mais embaralhado e solucionável
+    # tabuleiro = gerarTabuleiro()
+
+    # Tabuleiro de exemplo solvável rápido
     tabuleiro = [5, 1, 2, 4,
                  9, 6, 3, 8,
                  13, 10, 7, 12,
@@ -18,42 +21,41 @@ def main():
     print("🧩 Estado inicial:", estado_inicial)
     print("🎯 Estado objetivo:", estado_objetivo)
 
-    # Verifica se o tabuleiro é solucionável
-    if not verificaSolvabilidade(tabuleiro):
-        print("❌ Tabuleiro não é solucionável.")
-        return
-    else:
-        print("✅ Tabuleiro é solucionável.")
-
-    # Cria e expande o grafo até encontrar o objetivo
+    # Cria e expande o grafo
     grafo = Grafo()
-    encontrado = grafo.construir_grafo(estado_inicial, estado_objetivo)
+    grafo.construir_grafo(estado_inicial, limite=50000)
 
-    if not encontrado:
-        print("⚠️ O estado objetivo NÃO foi encontrado na construção do grafo.")
-        return
+    grafoBFS = grafo.copia()
+    grafoDFS = grafo.copia()
+
+    print(f"📌 Vértices no grafo: {len(grafo.vertices)}")
+    if estado_objetivo not in grafo.vertices:
+        print("⚠️ Estado objetivo não gerado no grafo!")
     else:
-        print("✅ O estado objetivo foi incluído no grafo.")
+        print("🎯 Estado objetivo presente no grafo.")
 
     # --- BFS no grafo ---
-    caminho_bfs = bfs_em_grafo(grafo, estado_inicial, estado_objetivo)
+    caminho_bfs = bfs_em_grafo(
+        grafoBFS, estado_inicial, estado_objetivo, limite_vertices_total=100000)
     if caminho_bfs:
         print("\n✅ BFS (no grafo) encontrou solução!")
         print(f"Movimentos: {len(caminho_bfs) - 1}")
         for i, passo in enumerate(caminho_bfs):
             print(f"Passo {i}: {passo}")
     else:
-        print("\n❌ BFS não encontrou solução no grafo.")
+        print("\n❌ BFS não encontrou solução no grafo com o limite configurado.")
 
     # --- DFS no grafo ---
-    caminho_dfs = dfs_em_grafo(grafo, estado_inicial, estado_objetivo)
+    caminho_dfs = dfs_em_grafo(grafoDFS, estado_inicial, estado_objetivo,
+                               limite_profundidade=1000, limite_vertices_total=100000)
     if caminho_dfs:
         print("\n✅ DFS (no grafo) encontrou solução!")
         print(f"Movimentos: {len(caminho_dfs) - 1}")
         for i, passo in enumerate(caminho_dfs):
             print(f"Passo {i}: {passo}")
     else:
-        print("\n❌ DFS não encontrou solução no grafo (ou bateu no limite de profundidade).")
+        print("\n❌ DFS não encontrou solução no grafo com o limite configurado")
+
 
 if __name__ == "__main__":
     main()

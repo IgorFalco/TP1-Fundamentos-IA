@@ -3,8 +3,6 @@
 
 import random
 from collections import deque
-from estado import Estado
-from grafo import Grafo
 
 #########   Tarefa 1   #########
 
@@ -35,10 +33,7 @@ def gerarTabuleiro():
 
 #########   Tarefa 3   #########
 
-def bfs_em_grafo(grafo, estado_inicial, estado_objetivo):
-    if estado_inicial not in grafo.vertices or estado_objetivo not in grafo.vertices:
-        return None
-
+def bfs_em_grafo(grafo, estado_inicial, estado_objetivo, limite_vertices_total=100000):
     fila = deque([estado_inicial])
     visitados = set()
     predecessores = {estado_inicial: None}
@@ -55,17 +50,20 @@ def bfs_em_grafo(grafo, estado_inicial, estado_objetivo):
             caminho.reverse()
             return caminho
 
-        for vizinho in grafo.vertices.get(atual, []):
+        for vizinho in atual.get_neighbors():
+            if vizinho not in grafo.vertices:
+                if len(grafo.vertices) >= limite_vertices_total:
+                    continue
+                grafo.adicionar_vertice(vizinho)
+                grafo.adicionar_aresta(atual, vizinho)
+
             if vizinho not in visitados and vizinho not in fila:
                 fila.append(vizinho)
                 predecessores[vizinho] = atual
 
     return None
 
-def dfs_em_grafo(grafo, estado_inicial, estado_objetivo, limite_profundidade=5000):
-    if estado_inicial not in grafo.vertices or estado_objetivo not in grafo.vertices:
-        return None
-
+def dfs_em_grafo(grafo, estado_inicial, estado_objetivo, limite_profundidade=5000, limite_vertices_total=100000):
     pilha = [(estado_inicial, [estado_inicial])]
     visitados = set()
 
@@ -81,7 +79,13 @@ def dfs_em_grafo(grafo, estado_inicial, estado_objetivo, limite_profundidade=500
         if len(caminho) >= limite_profundidade:
             continue
 
-        for vizinho in reversed(grafo.vertices.get(atual, [])):
+        for vizinho in reversed(atual.get_neighbors()):
+            if vizinho not in grafo.vertices:
+                if len(grafo.vertices) >= limite_vertices_total:
+                    continue
+                grafo.adicionar_vertice(vizinho)
+                grafo.adicionar_aresta(atual, vizinho)
+
             if vizinho not in visitados:
                 pilha.append((vizinho, caminho + [vizinho]))
 

@@ -1,4 +1,4 @@
-from src.funcoes import verificaSolvabilidade, gerarTabuleiro, busca_em_largura, busca_em_profundidade
+from src.funcoes import verificaSolvabilidade, gerarTabuleiro, bfs_em_grafo, dfs_em_grafo
 from src.estado import Estado
 from src.grafo import Grafo
 import unittest
@@ -114,41 +114,51 @@ class TestGrafo(unittest.TestCase):
 
 class TestBuscaEmLargura(unittest.TestCase):
 
-    def test_bfs_encontra_solucao_simples(self):
-        estado_inicial = Estado([1, 2, 3, 4,
-                                 5, 6, 7, 8,
-                                 9, 10, 11, 12,
-                                 13, 14, 0, 15])
+    def test_bfs_tabuleiro_complexo(self):
+        estado_inicial = Estado([5, 1, 2, 4,
+                                 9, 6, 3, 8,
+                                 13, 10, 7, 12,
+                                 0, 14, 11, 15])
 
         estado_objetivo = Estado([1, 2, 3, 4,
                                   5, 6, 7, 8,
                                   9, 10, 11, 12,
                                   13, 14, 15, 0])
 
-        caminho = busca_em_largura(estado_inicial, estado_objetivo)
+        grafo = Grafo()
+        grafo.construir_grafo(estado_inicial, limite=10000)
+
+        caminho = bfs_em_grafo(grafo, estado_inicial, estado_objetivo)
 
         self.assertIsNotNone(caminho)
+        self.assertEqual(caminho[0], estado_inicial)
         self.assertEqual(caminho[-1], estado_objetivo)
-        self.assertEqual(len(caminho) - 1, 1)  # 1 movimento até o objetivo
+        print(f"BFS - Movimentos necessários: {len(caminho) - 1}")
+
 
 class TestBuscaEmProfundidade(unittest.TestCase):
 
-    def test_dfs_encontra_solucao_simples(self):
-        estado_inicial = Estado([1, 2, 3, 4,
-                                 5, 6, 7, 8,
-                                 9, 10, 11, 12,
-                                 13, 14, 0, 15])  # apenas 1 movimento do objetivo
+    def test_dfs_tabuleiro_complexo(self):
+        estado_inicial = Estado([5, 1, 2, 4,
+                                 9, 6, 3, 8,
+                                 13, 10, 7, 12,
+                                 0, 14, 11, 15])
 
         estado_objetivo = Estado([1, 2, 3, 4,
                                   5, 6, 7, 8,
                                   9, 10, 11, 12,
                                   13, 14, 15, 0])
 
-        caminho = busca_em_profundidade(estado_inicial, estado_objetivo)
+        grafo = Grafo()
+        grafo.construir_grafo(estado_inicial, limite=10000)
+
+        caminho = dfs_em_grafo(grafo, estado_inicial,
+                               estado_objetivo, limite_profundidade=1000)
 
         self.assertIsNotNone(caminho)
+        self.assertEqual(caminho[0], estado_inicial)
         self.assertEqual(caminho[-1], estado_objetivo)
-        self.assertEqual(len(caminho) - 1, 1)  # Apenas 1 movimento até o objetivo
+        print(f"DFS - Movimentos necessários: {len(caminho) - 1}")
 
 
 if __name__ == '__main__':
