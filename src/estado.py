@@ -6,6 +6,7 @@ class Estado:
     def __init__(self, tabuleiro):
         # Inicializa um estado do jogo.
         self.tabuleiro = tuple(tabuleiro)  # Usa tupla para imutabilidade
+        self.hash = hash(self.tabuleiro)
         self.zero_index = self.tabuleiro.index(0)  # Posição do espaço vazio
 
     def __eq__(self, other):
