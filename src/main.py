@@ -1,23 +1,24 @@
 from estado import Estado
 import gc
-from funcoes import bfs, bfs_otimizada, dfs, gerarTabuleiro, verificaSolvabilidade, a_estrela, gerar_estado_por_movimentos, avaliar_algoritmo
+from funcoes import bfs_otimizada, dfs, a_estrela, avaliar_algoritmos
 
 
 def main():
-
     estado_objetivo = Estado([1, 2, 3, 4,
                               5, 6, 7, 8,
                               9, 10, 11, 12,
                               13, 14, 15, 0])
 
-    avaliar_algoritmo("BFS", bfs_otimizada, estado_objetivo,
-                      num_testes=10, movimentos_iniciais=30)
+    avaliar_algoritmos("BFS", bfs_otimizada, estado_objetivo, num_testes=3,
+                      max_movimentos=50, tempo_limite=30, caminho_csv="bfs_resultados.csv")
     gc.collect()
-    avaliar_algoritmo("DFS", dfs, estado_objetivo,
-                      num_testes=10, movimentos_iniciais=30)
+
+    avaliar_algoritmos("DFS", dfs, estado_objetivo, num_testes=3,
+                      max_movimentos=50, tempo_limite=30, caminho_csv="dfs_resultados.csv")
     gc.collect()
-    avaliar_algoritmo("A*", a_estrela, estado_objetivo,
-                      num_testes=10, movimentos_iniciais=100)
+
+    avaliar_algoritmos("A*", a_estrela, estado_objetivo, num_testes=3,
+                      max_movimentos=100, tempo_limite=30, caminho_csv="a_estrela_resultados.csv")
 
 
 if __name__ == "__main__":
