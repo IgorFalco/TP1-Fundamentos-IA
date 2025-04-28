@@ -1,6 +1,6 @@
 from estado import Estado
 import gc
-from funcoes import bfs_otimizada, dfs, a_estrela, avaliar_algoritmos
+from funcoes import bfs, dfs, a_estrela, avaliar_algoritmos
 
 
 def main():
@@ -9,7 +9,7 @@ def main():
                               9, 10, 11, 12,
                               13, 14, 15, 0])
 
-    avaliar_algoritmos("BFS", bfs_otimizada, estado_objetivo, num_testes=3,
+    avaliar_algoritmos("BFS", bfs, estado_objetivo, num_testes=3,
                       max_movimentos=50, tempo_limite=30, caminho_csv="bfs_resultados.csv")
     gc.collect()
 

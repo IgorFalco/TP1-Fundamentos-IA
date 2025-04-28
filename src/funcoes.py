@@ -81,22 +81,29 @@ def gerar_estado_por_movimentos(n, estado_objetivo=None):
 
 
 def bfs(grafo, estado_inicial, estado_objetivo, limite_vertices_total=2000000):
-    pbar = tqdm(total=limite_vertices_total, desc="BFS Expandindo nós")
     fila = deque([estado_inicial])
+    fila_set = {estado_inicial}
     visitados = set()
     predecessores = {estado_inicial: None}
     nos_expandidos = 0
 
     grafo.adicionar_vertice(estado_inicial)
 
+    barra = tqdm(total=limite_vertices_total,
+                 desc="🔄 BFS Expandindo nós", unit="nó", ncols=80)
+
     while fila:
         atual = fila.popleft()
+        fila_set.discard(atual)
+
+        if atual in visitados:
+            continue
         visitados.add(atual)
         nos_expandidos += 1
-        pbar.update(1)
+        barra.update(1)
 
         if atual == estado_objetivo:
-            pbar.close()
+            barra.close()
             caminho = []
             while atual:
                 caminho.append(atual)
@@ -113,13 +120,14 @@ def bfs(grafo, estado_inicial, estado_objetivo, limite_vertices_total=2000000):
                 grafo.adicionar_vertice(vizinho)
                 grafo.adicionar_aresta(atual, vizinho)
 
-            if vizinho not in visitados and vizinho not in fila:
+            if vizinho not in visitados and vizinho not in fila_set:
                 fila.append(vizinho)
+                fila_set.add(vizinho)
                 predecessores[vizinho] = atual
 
+    barra.close()
     print(f"⚠️ BFS - Limite de nós atingido. Nós expandidos: {nos_expandidos}")
     grafo.nos_expandidos = nos_expandidos
-    pbar.close()
     return None
 
 
@@ -262,10 +270,12 @@ def avaliar_algoritmos(nome_alg, funcao_busca, estado_objetivo, num_testes=10, m
         total_tempo = 0
         solucoes_encontradas = 0
 
-        print(f"\n🏁 Testando {nome_alg} com {movimentos_iniciais} movimentos iniciais:")
+        print(
+            f"\n🏁 Testando {nome_alg} com {movimentos_iniciais} movimentos iniciais:")
 
         for i in range(num_testes):
-            print(f"\n🧪 Teste {i+1}/{num_testes} - {movimentos_iniciais} movimentos aleatórios")
+            print(
+                f"\n🧪 Teste {i+1}/{num_testes} - {movimentos_iniciais} movimentos aleatórios")
             estado_inicial = gerar_estado_por_movimentos(movimentos_iniciais)
             grafo = Grafo()
 
@@ -282,12 +292,14 @@ def avaliar_algoritmos(nome_alg, funcao_busca, estado_objetivo, num_testes=10, m
 
             # Se demorar demais, cancela
             if duracao > tempo_limite:
-                print(f"⏳ Tempo limite de {tempo_limite}s atingido. Ignorando este teste.")
+                print(
+                    f"⏳ Tempo limite de {tempo_limite}s atingido. Ignorando este teste.")
                 continue
 
             if caminho:
                 movimentos = len(caminho) - 1
-                print(f"✅ Solução encontrada em {duracao:.4f}s com {movimentos} movimentos.")
+                print(
+                    f"✅ Solução encontrada em {duracao:.4f}s com {movimentos} movimentos.")
                 solucoes_encontradas += 1
                 total_movimentos += movimentos
             else:
@@ -300,7 +312,8 @@ def avaliar_algoritmos(nome_alg, funcao_busca, estado_objetivo, num_testes=10, m
             gc.collect()
 
         # Calcula médias
-        media_movimentos = total_movimentos / solucoes_encontradas if solucoes_encontradas else 0
+        media_movimentos = total_movimentos / \
+            solucoes_encontradas if solucoes_encontradas else 0
         media_nos_expandidos = total_nos_expandidos / num_testes
         media_tempo = total_tempo / num_testes
 
@@ -317,60 +330,10 @@ def avaliar_algoritmos(nome_alg, funcao_busca, estado_objetivo, num_testes=10, m
     # Se for pra salvar em CSV
     if caminho_csv:
         with open(caminho_csv, mode='w', newline='') as arquivo_csv:
-            writer = csv.DictWriter(arquivo_csv, fieldnames=resultados[0].keys())
+            writer = csv.DictWriter(
+                arquivo_csv, fieldnames=resultados[0].keys())
             writer.writeheader()
             writer.writerows(resultados)
         print(f"📁 Resultados salvos em {caminho_csv}")
 
     return resultados
-
-
-def bfs_otimizada(grafo, estado_inicial, estado_objetivo, limite_vertices_total=2000000):
-    fila = deque([estado_inicial])
-    fila_set = {estado_inicial}
-    visitados = set()
-    predecessores = {estado_inicial: None}
-    nos_expandidos = 0
-
-    grafo.adicionar_vertice(estado_inicial)
-
-    barra = tqdm(total=limite_vertices_total,
-                 desc="🔄 BFS Expandindo nós", unit="nó", ncols=80)
-
-    while fila:
-        atual = fila.popleft()
-        fila_set.discard(atual)
-
-        if atual in visitados:
-            continue
-        visitados.add(atual)
-        nos_expandidos += 1
-        barra.update(1)
-
-        if atual == estado_objetivo:
-            barra.close()
-            caminho = []
-            while atual:
-                caminho.append(atual)
-                atual = predecessores[atual]
-            caminho.reverse()
-            print(f"🔎 BFS - Nós expandidos: {nos_expandidos}")
-            grafo.nos_expandidos = nos_expandidos
-            return caminho
-
-        for vizinho in atual.get_neighbors():
-            if vizinho not in grafo.vertices:
-                if len(grafo.vertices) >= limite_vertices_total:
-                    continue
-                grafo.adicionar_vertice(vizinho)
-                grafo.adicionar_aresta(atual, vizinho)
-
-            if vizinho not in visitados and vizinho not in fila_set:
-                fila.append(vizinho)
-                fila_set.add(vizinho)
-                predecessores[vizinho] = atual
-
-    barra.close()
-    print(f"⚠️ BFS - Limite de nós atingido. Nós expandidos: {nos_expandidos}")
-    grafo.nos_expandidos = nos_expandidos
-    return None

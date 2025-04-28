@@ -27,7 +27,8 @@ def gerar_graficos(caminhos_csv, saida_pasta="graficos"):
 
     def adicionar_linha_vertical(x_valor):
         """Adiciona uma linha vertical no gráfico."""
-        plt.axvline(x=x_valor, color='red', linestyle='--', label=f'Marcação em {x_valor}')
+        plt.axvline(x=x_valor, color='red', linestyle='--',
+                    label=f'Marcação em {x_valor}')
         plt.legend()
 
     # --------- Gráfico 1: Tempo Médio ---------
