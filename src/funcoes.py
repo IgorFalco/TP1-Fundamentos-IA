@@ -81,6 +81,49 @@ def gerar_estado_por_movimentos(n, estado_objetivo=None):
 
 
 def bfs(grafo, estado_inicial, estado_objetivo, limite_vertices_total=2000000):
+    pbar = tqdm(total=limite_vertices_total, desc="BFS Expandindo nós")
+    fila = deque([estado_inicial])
+    visitados = set()
+    predecessores = {estado_inicial: None}
+    nos_expandidos = 0
+
+    grafo.adicionar_vertice(estado_inicial)
+
+    while fila:
+        atual = fila.popleft()
+        visitados.add(atual)
+        nos_expandidos += 1
+        pbar.update(1)
+
+        if atual == estado_objetivo:
+            pbar.close()
+            caminho = []
+            while atual:
+                caminho.append(atual)
+                atual = predecessores[atual]
+            caminho.reverse()
+            print(f"🔎 BFS - Nós expandidos: {nos_expandidos}")
+            grafo.nos_expandidos = nos_expandidos
+            return caminho
+
+        for vizinho in atual.get_neighbors():
+            if vizinho not in grafo.vertices:
+                if len(grafo.vertices) >= limite_vertices_total:
+                    continue
+                grafo.adicionar_vertice(vizinho)
+                grafo.adicionar_aresta(atual, vizinho)
+
+            if vizinho not in visitados and vizinho not in fila:
+                fila.append(vizinho)
+                predecessores[vizinho] = atual
+
+    print(f"⚠️ BFS - Limite de nós atingido. Nós expandidos: {nos_expandidos}")
+    grafo.nos_expandidos = nos_expandidos
+    pbar.close()
+    return None
+
+
+def bfs_otimizada(grafo, estado_inicial, estado_objetivo, limite_vertices_total=2000000):
     fila = deque([estado_inicial])
     fila_set = {estado_inicial}
     visitados = set()
